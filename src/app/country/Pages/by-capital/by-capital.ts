@@ -5,4 +5,11 @@ import { Component } from '@angular/core';
   imports: [],
   templateUrl: './by-capital.html'
 })
-export class ByCapital {}
+export class ByCapital {
+
+  onSearch(value:string){
+    console.log(value);
+  }
+
+
+}
