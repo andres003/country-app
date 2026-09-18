@@ -8,9 +8,9 @@ export class CountryMapper {
     const country: Country = {
       uuid: countryData.uuid,
       svg: countryData.flag.url_svg,
-      name: countryData.names.common,
+      name: countryData.names.translations["spa"].common ?? 'No Spanish Name',
       capital: countryData.capitals[0].name,
-      population: countryData.population
+      population: countryData.population,
     };
     return country;
   }
