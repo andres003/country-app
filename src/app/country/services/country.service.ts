@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { RESTCountry } from '../Interfaces/rest-country.interface';
-import { map, Observable } from 'rxjs';
+import { RESTCountry, Language } from '../Interfaces/rest-country.interface';
+import { map, Observable, catchError, throwError, mergeMap, of, tap } from 'rxjs';
 import type { Country } from '../Interfaces/country.interface';
 import { CountryMapper } from '../mappers/country.mapper';
 
@@ -23,7 +23,30 @@ export class CountryService {
     query = query.toLocaleLowerCase();
     return this.http.get<RESTCountry>(`${API_URL}/capitals?q=${query}`, { headers: this.HEADERS_REQUEST })
       .pipe(
-        map(restCountries => CountryMapper.mapRestCountryArrayToArray(restCountries.data.objects))
+        mergeMap(data => {
+          if (data.data.objects.length == 0) return throwError(() => new Error("No se encontraron paises con ese query."))
+          return of(data);
+        }),
+        map(restCountries => CountryMapper.mapRestCountryArrayToArray(restCountries.data.objects)),
+        catchError(err => {
+          return throwError(() => new Error(err))
+        })
+      );
+  }
+
+
+  searchByCountry(query: string): Observable<Country[]> {
+    query = query.toLocaleLowerCase();
+    return this.http.get<RESTCountry>(`${API_URL}/names.common?q=${query}`, { headers: this.HEADERS_REQUEST })
+      .pipe(
+        mergeMap(data => {
+          if (data.data.objects.length == 0) return throwError(() => new Error("No se encontraron paises con ese query."))
+          return of(data);
+        }),
+        map(restCountries => CountryMapper.mapRestCountryArrayToArray(restCountries.data.objects)),
+        catchError(err => {
+          return throwError(() => new Error(err))
+        })
       );
   }
 
