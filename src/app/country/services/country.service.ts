@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { RESTCountry, Language } from '../Interfaces/rest-country.interface';
-import { map, Observable, catchError, throwError, mergeMap, of, tap } from 'rxjs';
+import { map, Observable, catchError, throwError, mergeMap, of, tap, delay } from 'rxjs';
 import type { Country } from '../Interfaces/country.interface';
 import { CountryMapper } from '../mappers/country.mapper';
 
@@ -44,6 +44,22 @@ export class CountryService {
           return of(data);
         }),
         map(restCountries => CountryMapper.mapRestCountryArrayToArray(restCountries.data.objects)),
+        delay(1000),
+        catchError(err => {
+          return throwError(() => new Error(err))
+        })
+      );
+  }
+
+  searchByCountryAlphaCode(code: string): Observable<Country> {
+    return this.http.get<RESTCountry>(`${API_URL}/codes.alpha_2/${code}`, { headers: this.HEADERS_REQUEST })
+      .pipe(
+        mergeMap(data => {
+          if (data.data.objects.length == 0) return throwError(() => new Error("No se encontraron paises con ese codigo."))
+          return of(data);
+        }),
+        map(restCountries => CountryMapper.mapRestCountryArrayToArray(restCountries.data.objects)),
+        map(restCountries => restCountries.at(0) as Country),
         catchError(err => {
           return throwError(() => new Error(err))
         })

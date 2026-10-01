@@ -25,10 +25,35 @@
           </span>
         </td>
         <td>
-          <a class="link-primary cursor-pointer">Mas informacion</a>
+          <a [routerLink]="['/country/by', country.codeCountryAlpha2]" class="link-primary cursor-pointer">Mas informacion</a>
         </td>
       </tr>
       }
+
+      @if (errorMessage()) {
+      <tr>
+        <td colspan="8" class="text-center">
+          {{errorMessage()}}
+        </td>
+      </tr>
+      }
+
+      @if(countries().length === 0 && !isLoading()) {
+      <tr>
+        <td colspan="8" class="text-center">
+          No se encontraron resultados para la busqueda
+        </td>
+      </tr>
+      }
+
+      @if (isLoading()) {
+      <tr>
+        <td colspan="8" class="text-center">
+          Cargando...
+        </td>
+      </tr>
+      }
+
     </tbody>
   </table>
 </section>

@@ -11,6 +11,7 @@ export class CountryMapper {
       name: countryData.names.translations["spa"].common ?? 'No Spanish Name',
       capital: countryData.capitals[0].name,
       population: countryData.population,
+      codeCountryAlpha2: countryData.codes.alpha_2,
     };
     return country;
   }
